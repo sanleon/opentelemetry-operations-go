@@ -37,7 +37,7 @@ type Option func(*options)
 
 // DisplayNameFormatter is is a function that produces the display name of a span
 // given its SpanData
-type DisplayNameFormatter func(*export.SpanData) string
+type DisplayNameFormatter func(*export.SpanSnapshot) string
 
 // options contains options for configuring the exporter.
 type options struct {
@@ -322,7 +322,7 @@ func newContextWithTimeout(ctx context.Context, timeout time.Duration) (context.
 }
 
 // ExportSpans exports a SpanData to Stackdriver Trace.
-func (e *Exporter) ExportSpans(ctx context.Context, spanData []*export.SpanData) error {
+func (e *Exporter) ExportSpans(ctx context.Context, spanData []*export.SpanSnapshot) error {
 	for _, sd := range spanData {
 		if len(e.traceExporter.o.DefaultTraceAttributes) > 0 {
 			sd = e.sdWithDefaultTraceAttributes(sd)
@@ -342,7 +342,7 @@ func (e *Exporter) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-func (e *Exporter) sdWithDefaultTraceAttributes(sd *export.SpanData) *export.SpanData {
+func (e *Exporter) sdWithDefaultTraceAttributes(sd *export.SpanSnapshot) *export.SpanSnapshot {
 	newSD := *sd
 	for k, v := range e.traceExporter.o.DefaultTraceAttributes {
 		switch val := v.(type) {
